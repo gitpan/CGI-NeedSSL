@@ -3,7 +3,7 @@ package CGI::NeedSSL;
 #use strict;
 #use warnings;
 use vars qw($VERSION @EXPORT_OK @ISA);
-$VERSION = '0.04';
+$VERSION = '0.05';
 use Exporter;
 @ISA = qw(Exporter);
 @EXPORT_OK = qw(croak_unless_via_SSL cgi_is_via_SSL 
@@ -33,16 +33,20 @@ croak_unless_via_SSL();
 
 my $user_msg;
 my $https_ahref = 'https://localhost';
+my $http_ahref = 'http://localhost';
 my $svrname = $ENV{SERVER_NAME};
 my $scrname = $ENV{SCRIPT_NAME};
 my $qstring = $ENV{QUERY_STRING};
 if($svrname and $scrname) {	
 	$https_ahref = 	'https://' . $svrname . $scrname;
 	$https_ahref .= "?$qstring" if($qstring);
+	$http_ahref = $https_ahref;
+	$http_ahref =~ s/https/http/;
 }
 
 my $header_msg = "Content-Type: text/html; charset=ISO-8859-1\n\n";
 my $redirect_msg = "Location: $https_ahref\n\n";
+my $redirect_to_http_msg = "Location: $http_ahref\n\n";
 my $default_msg = <<HTML_MSG;
 <?xml version=\"1.0\" encoding=\"utf-8\"?>
 <!DOCTYPE html
@@ -107,6 +111,25 @@ sub redirect_unless_via_SSL {
 	return 1;
 }
 sub redirect_unless_via_ssl { redirect_unless_via_SSL(shift) }
+
+
+=item B<redirect_unless_via_HTTP> (alternate, redirect_unless_via_http)
+
+Print a redirect and exit if not using regular, non-SSL http. 
+Optional argument is to the redirection URL. This allows a redirect away 
+from the https-only service back to a regular http service if the https 
+page is called for a page that is only available via regular http.
+Defaults to the current URL, but called via http://.
+
+=cut
+
+sub redirect_unless_via_HTTP {
+	my $msg = shift || $redirect_to_http_msg;	
+	if(cgi_is_via_SSL()) { print $msg; exit }
+	return 1;
+}
+sub redirect_unless_via_http { redirect_unless_via_http(shift) }
+
 
 =item B<cgi_user_error_msg>
 
