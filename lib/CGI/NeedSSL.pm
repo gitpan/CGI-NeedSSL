@@ -1,9 +1,9 @@
 package CGI::NeedSSL;
 
-use strict;
-use warnings;
+#use strict;
+#use warnings;
 use vars qw($VERSION @EXPORT_OK @ISA);
-$VERSION = '0.01';
+$VERSION = '0.02';
 use Exporter;
 @ISA = qw(Exporter);
 @EXPORT_OK = qw(croak_unless_via_SSL cgi_is_via_SSL 
@@ -18,9 +18,11 @@ CGI::NeedSSL - module to check SSL status of a CGI call.
 =head1 DESCRIPTION
 
 Though some servers are configured with a separate cgi-bin directory for 
-SSL-only CGI, many allow CGI to be called either via http: or https: URLS.
+SSL-only CGI programs, many allow CGI programs to be called either via a 
+http:// or a https:// url.
 
-This module allows SSL-only to be checked and enforced by a perl CGI program.
+This module allows SSL-only status of a CGI program running environment to 
+be checked and enforced by a perl CGI program.
 
 =head1 SYNOPSIS
 
@@ -51,7 +53,7 @@ my $default_msg =
 
 =over 4
 
-item B<cgi_is_via_SSL()>
+item B<cgi_is_via_SSL>
 
 Return 1 if https/SSL in effect, otherwise return undef.
 
@@ -64,11 +66,12 @@ sub cgi_is_via_SSL {
 }
 
 
-=item B<croak_unless_via_SSL()>
+=item B<croak_unless_via_SSL>
 
 Die, via a call CGI::Croak::croak, unless https/SSL is in effect. Prints an 
 HTML message (using the CGI module) suggesting the script be called via https://.
-This default message can be changed with cgi_user_error_msg().
+This default message can be changed with cgi_user_error_msg(). (An alternate 
+spelling for this is croak_unless_via_ssl.)
 
 =cut
 
@@ -78,8 +81,11 @@ sub croak_unless_via_SSL {
 	return 0;
 }
 
+# added for those who hate capitalization :)
+sub croak_unless_via_ssl { croak_unless_via_SSL() }
 
-=item B<cgi_user_error_msg()>
+
+=item B<cgi_user_error_msg>
 
 Set and/or return the current error msg. The error message set by the user 
 should be fully HTML, except for the header which the routine prints first--
@@ -118,6 +124,7 @@ sub new {
 	bless $self, $class;
 	return $self;
 };
+
 
 =back
 

@@ -2,5 +2,8 @@ Revision history for Perl module CGI::NeedSSL
 
 0.01 Wed Jan 21 21:18:03 2004
 	- original version; created by ExtUtils::ModuleMaker 0.32
-
+	
+0.02 Sun Feb 1 2004
+	- cleanup of README and pod
+	- comment out strict and warnings to speed up loading
 

@@ -1,11 +1,51 @@
-pod2text CGI::NeedSSL.pm > README
+NAME
+    CGI::NeedSSL - module to check SSL status of a CGI call.
 
-If this is still here it means the programmer was too lazy to create the readme file.
+DESCRIPTION
+    Though some servers are configured with a separate cgi-bin directory for
+    SSL-only CGI, many allow CGI to be called either via http: or https:
+    URLS.
 
-You can create it now by using the command shown above from this directory.
+    This module allows SSL-only to be checked and enforced by a perl CGI
+    program.
 
-At the very least you should be able to use this set of instructions
-to install the module...
+SYNOPSIS
+    use CGI::NeedSSL qw( croak_unless_via_SSL ); croak_unless_via_SSL();
+
+METHODS
+        item cgi_is_via_SSL()
+
+        Return 1 if https/SSL in effect, otherwise return undef.
+
+    croak_unless_via_SSL()
+        Die, via a call CGI::Croak::croak, unless https/SSL is in effect.
+        Prints an HTML message (using the CGI module) suggesting the script
+        be called via https://. This default message can be changed with
+        cgi_user_error_msg().
+
+    cgi_user_error_msg()
+        Set and/or return the current error msg. The error message set by
+        the user should be fully HTML, except for the header which the
+        routine prints first-- ie, something like '<HTML><HEAD>NO
+        SSL!</HEAD><BODY>Call us with https://</BODY></HTML>'.
+
+    cgi_error_exit()
+        Prints our error message and exits.
+
+AUTHOR
+    William Herrera (wherrera@skylightview.com).
+
+SUPPORT
+    Questions, feature requests and bug reports should go to
+    wherrera@skylightview.com
+
+COPYRIGHT
+        Copyright (C) 2004, by William Herrera. All Rights Reserved.
+
+    This module is free software; you can redistribute it and/or modify it
+    under the same terms as Perl itself.
+
+To install the module...
 
 perl Makefile.PL
 make
