@@ -6,4 +6,8 @@ Revision history for Perl module CGI::NeedSSL
 0.02 Sun Feb 1 2004
 	- cleanup of README and pod
 	- comment out strict and warnings to speed up loading
+	
+0.03 Tue Feb 3 2004
+	- no longer requires CGI.pm
+	- allows a lower case function call of croak_unless_via_ssl()
 

@@ -3,12 +3,11 @@ package CGI::NeedSSL;
 #use strict;
 #use warnings;
 use vars qw($VERSION @EXPORT_OK @ISA);
-$VERSION = '0.02';
+$VERSION = '0.03';
 use Exporter;
 @ISA = qw(Exporter);
 @EXPORT_OK = qw(croak_unless_via_SSL cgi_is_via_SSL 
 					cgi_user_error_msg cgi_error_exit);
-use CGI;
 use CGI::Carp qw(croak);
 
 =head1 NAME
@@ -40,14 +39,21 @@ if($svrname and $scrname) {
 	$https_ahref = 	'https://' . $svrname . $scrname;
 	$https_ahref .= "?$qstring" if($qstring);
 }
-my $query = new CGI;
-my $default_msg = 
-	$query->start_html(-title => 'Error: Need to use SSL (https:) to access')	.
-	$query->h2('Sorry, this page needs to be accessed via SSL (https:).')		.
-	$query->p('Maybe you meant to try ', $query->a( {-href=>$https_ahref},
-		"this URL: $https_ahref"), ' instead.')									.
-	$query->end_html
-	;
+
+my $header_msg = "Content-Type: text/html; charset=ISO-8859-1\n\n";
+my $default_msg = <<HTML_MSG;
+<?xml version=\"1.0\" encoding=\"utf-8\"?>
+<!DOCTYPE html
+        PUBLIC \"-//W3C//DTD XHTML Basic 1.0//EN\"
+        \"http://www.w3.org/TR/xhtml-basic/xhtml-basic10.dtd\">
+<html xmlns=\"http://www.w3.org/1999/xhtml\" lang=\"en-US\">
+<head><title>Error: Need to use SSL (https:) to access</title></head>
+<body>
+  <h2>Sorry, this page needs to be accessed via SSL (https:).</h2>
+<p>Maybe you meant to try  <a href=\"$https_ahref\"> this URL: $https_ahref\</a\> instead.</p>
+</body>
+</html>
+HTML_MSG
 
 =head1 METHODS
 
@@ -60,11 +66,11 @@ Return 1 if https/SSL in effect, otherwise return undef.
 =cut
 
 # are we using https/ssl ?  returns 1 if so, otherwise undef
+# Any HTML/SSL compliant web server should manage the HTTPS environment variable
 sub cgi_is_via_SSL {
-	return 1 if $query->http('HTTPS');
+	return 1 if $ENV{HTTPS};
 	return;
 }
-
 
 =item B<croak_unless_via_SSL>
 
@@ -72,6 +78,8 @@ Die, via a call CGI::Croak::croak, unless https/SSL is in effect. Prints an
 HTML message (using the CGI module) suggesting the script be called via https://.
 This default message can be changed with cgi_user_error_msg(). (An alternate 
 spelling for this is croak_unless_via_ssl.)
+
+The default croak message is a convenient redirect to the same page via https. 
 
 =cut
 
@@ -103,7 +111,7 @@ sub cgi_user_error_msg {
 }
 
 
-=item B<cgi_error_exit()>
+=item B<cgi_error_exit>
 
 Prints our error message and exits.
 
@@ -112,7 +120,7 @@ Prints our error message and exits.
 
 # print error message to stdout, then croak
 sub cgi_error_exit {
-	print $query->header, cgi_user_error_msg();
+	print $header_msg, cgi_user_error_msg();
 	croak "Bad call of this CGI: SSL/HTTPS not set--need https.";
 }
 
