@@ -3,11 +3,12 @@ package CGI::NeedSSL;
 #use strict;
 #use warnings;
 use vars qw($VERSION @EXPORT_OK @ISA);
-$VERSION = '0.03';
+$VERSION = '0.04';
 use Exporter;
 @ISA = qw(Exporter);
 @EXPORT_OK = qw(croak_unless_via_SSL cgi_is_via_SSL 
-					cgi_user_error_msg cgi_error_exit);
+	croak_unless_via_ssl cgi_user_error_msg cgi_error_exit 
+	redirect_unless_via_SSL redirect_unless_via_ssl);
 use CGI::Carp qw(croak);
 
 =head1 NAME
@@ -41,6 +42,7 @@ if($svrname and $scrname) {
 }
 
 my $header_msg = "Content-Type: text/html; charset=ISO-8859-1\n\n";
+my $redirect_msg = "Location: $https_ahref\n\n";
 my $default_msg = <<HTML_MSG;
 <?xml version=\"1.0\" encoding=\"utf-8\"?>
 <!DOCTYPE html
@@ -75,9 +77,9 @@ sub cgi_is_via_SSL {
 =item B<croak_unless_via_SSL>
 
 Die, via a call CGI::Croak::croak, unless https/SSL is in effect. Prints an 
-HTML message (using the CGI module) suggesting the script be called via https://.
-This default message can be changed with cgi_user_error_msg(). (An alternate 
-spelling for this is croak_unless_via_ssl.)
+HTML message suggesting the script be called via https://. This default message 
+can be changed with cgi_user_error_msg(). (An alternate spelling for this is 
+croak_unless_via_ssl.)
 
 The default croak message is a convenient redirect to the same page via https. 
 
@@ -92,6 +94,19 @@ sub croak_unless_via_SSL {
 # added for those who hate capitalization :)
 sub croak_unless_via_ssl { croak_unless_via_SSL() }
 
+=item B<redirect_unless_via_SSL> (alternate, redirect_unless_via_ssl)
+
+Print a redirect and exit if not using https/SSL. Optional argument is to the
+redirection URL. Defaults to the current URL, but called via https://.
+
+=cut
+
+sub redirect_unless_via_SSL {
+	my $msg = shift || $redirect_msg;	
+	unless(cgi_is_via_SSL()) { print $msg; exit }
+	return 1;
+}
+sub redirect_unless_via_ssl { redirect_unless_via_SSL(shift) }
 
 =item B<cgi_user_error_msg>
 

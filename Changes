@@ -11,3 +11,5 @@ Revision history for Perl module CGI::NeedSSL
 	- no longer requires CGI.pm
 	- allows a lower case function call of croak_unless_via_ssl()
 
+0.04 Thurs Feb 4 2003
+	- added a redirection option, redirect_unless_via_SSL().
