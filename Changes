@@ -14,6 +14,6 @@ Revision history for Perl module CGI::NeedSSL
 0.04 Thurs Feb 4 2004
 	- added a redirection option, redirect_unless_via_SSL().
 
-0.05 Wed Apr 14 2004
+0.06 Wed Apr 14 2004
 	- added redirection option, redirect_unless_his_http().
 

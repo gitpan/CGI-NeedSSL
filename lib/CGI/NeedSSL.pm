@@ -3,11 +3,12 @@ package CGI::NeedSSL;
 #use strict;
 #use warnings;
 use vars qw($VERSION @EXPORT_OK @ISA);
-$VERSION = '0.05';
+$VERSION = '0.06';
 use Exporter;
 @ISA = qw(Exporter);
 @EXPORT_OK = qw(croak_unless_via_SSL cgi_is_via_SSL 
 	croak_unless_via_ssl cgi_user_error_msg cgi_error_exit 
+	redirect_unless_via_HTTP redirect_unless_via_http 
 	redirect_unless_via_SSL redirect_unless_via_ssl);
 use CGI::Carp qw(croak);
 
