@@ -1,0 +1,146 @@
+package CGI::NeedSSL;
+
+use strict;
+use warnings;
+use vars qw($VERSION @EXPORT_OK @ISA);
+$VERSION = '0.01';
+use Exporter;
+@ISA = qw(Exporter);
+@EXPORT_OK = qw(croak_unless_via_SSL cgi_is_via_SSL 
+					cgi_user_error_msg cgi_error_exit);
+use CGI;
+use CGI::Carp qw(croak);
+
+=head1 NAME
+
+CGI::NeedSSL - module to check SSL status of a CGI call.
+
+=head1 DESCRIPTION
+
+Though some servers are configured with a separate cgi-bin directory for 
+SSL-only CGI, many allow CGI to be called either via http: or https: URLS.
+
+This module allows SSL-only to be checked and enforced by a perl CGI program.
+
+=head1 SYNOPSIS
+
+use CGI::NeedSSL qw( croak_unless_via_SSL );
+croak_unless_via_SSL();
+
+=cut
+
+my $user_msg;
+my $https_ahref = 'https://localhost';
+my $svrname = $ENV{SERVER_NAME};
+my $scrname = $ENV{SCRIPT_NAME};
+my $qstring = $ENV{QUERY_STRING};
+if($svrname and $scrname) {	
+	$https_ahref = 	'https://' . $svrname . $scrname;
+	$https_ahref .= "?$qstring" if($qstring);
+}
+my $query = new CGI;
+my $default_msg = 
+	$query->start_html(-title => 'Error: Need to use SSL (https:) to access')	.
+	$query->h2('Sorry, this page needs to be accessed via SSL (https:).')		.
+	$query->p('Maybe you meant to try ', $query->a( {-href=>$https_ahref},
+		"this URL: $https_ahref"), ' instead.')									.
+	$query->end_html
+	;
+
+=head1 METHODS
+
+=over 4
+
+item B<cgi_is_via_SSL()>
+
+Return 1 if https/SSL in effect, otherwise return undef.
+
+=cut
+
+# are we using https/ssl ?  returns 1 if so, otherwise undef
+sub cgi_is_via_SSL {
+	return 1 if $query->http('HTTPS');
+	return;
+}
+
+
+=item B<croak_unless_via_SSL()>
+
+Die, via a call CGI::Croak::croak, unless https/SSL is in effect. Prints an 
+HTML message (using the CGI module) suggesting the script be called via https://.
+This default message can be changed with cgi_user_error_msg().
+
+=cut
+
+# error exit here unless SSL in effect
+sub croak_unless_via_SSL {
+	cgi_error_exit() unless cgi_is_via_SSL();
+	return 0;
+}
+
+
+=item B<cgi_user_error_msg()>
+
+Set and/or return the current error msg. The error message set by the user 
+should be fully HTML, except for the header which the routine prints first--
+ie, something like '<HTML><HEAD>NO SSL!</HEAD><BODY>Call us with https://</BODY></HTML>'.
+
+=cut
+
+# set and/or return the current error msg.
+# the error message set by the user should be fully HTML, ie 
+#  '<HTML><HEAD>NO SSL!</HEAD><BODY>Call us with https://</BODY></HTML>'
+sub cgi_user_error_msg {
+	my $msg = shift;
+	if($msg) { $user_msg = $msg }
+	return $user_msg ? $user_msg : $default_msg;
+}
+
+
+=item B<cgi_error_exit()>
+
+Prints our error message and exits.
+
+
+=cut
+
+# print error message to stdout, then croak
+sub cgi_error_exit {
+	print $query->header, cgi_user_error_msg();
+	croak "Bad call of this CGI: SSL/HTTPS not set--need https.";
+}
+
+
+# included mostly for testing purposes--probably not for use in real life
+sub new {
+	my ($class) = shift;
+	my $self = {};
+	bless $self, $class;
+	return $self;
+};
+
+=back
+
+=head1 AUTHOR
+
+William Herrera (wherrera@skylightview.com).
+
+=head1 SUPPORT
+
+Questions, feature requests and bug reports should go to wherrera@skylightview.com
+
+=head1 COPYRIGHT
+
+=over 4
+
+Copyright (C) 2004, by William Herrera.  
+All Rights Reserved. 
+
+=back
+
+This module is free software; you can redistribute it and/or modify it under 
+the same terms as Perl itself. 
+
+=cut
+
+1;

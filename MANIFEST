@@ -1,0 +1,15 @@
+MANIFEST
+LICENSE
+README
+Todo
+Changes
+lib/CGI/NeedSSL.pm
+t/001_load.t
+Makefile.PL
+LICENSE
+README
+Todo
+Changes
+lib/CGI/NeedSSL.pm
+t/001_load.t
+Makefile.PL
