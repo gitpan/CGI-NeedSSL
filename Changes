@@ -20,3 +20,6 @@ Revision history for Perl module CGI::NeedSSL
 0.07 Wed Apr 14 2004
 	- corrected caps typo in redirect_unless_via_http().
 
+0.08 Sun April 25 2004
+    - revised redirects
+    

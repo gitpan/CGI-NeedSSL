@@ -1,9 +1,9 @@
 package CGI::NeedSSL;
 
-#use strict;
-#use warnings;
+use strict;
+use warnings;
 use vars qw($VERSION @EXPORT_OK @ISA);
-$VERSION = '0.07';
+$VERSION = '0.08';
 use Exporter;
 @ISA = qw(Exporter);
 @EXPORT_OK = qw(croak_unless_via_SSL cgi_is_via_SSL 
@@ -107,8 +107,8 @@ redirection URL. Defaults to the current URL, but called via https://.
 =cut
 
 sub redirect_unless_via_SSL {
-	my $msg = shift || $redirect_msg;	
-	unless(cgi_is_via_SSL()) { print $msg; exit }
+    my $txt = shift || $redirect_msg;
+	unless(cgi_is_via_SSL()) { print $txt; exit }
 	return 1;
 }
 sub redirect_unless_via_ssl { redirect_unless_via_SSL(shift) }
@@ -125,8 +125,8 @@ Defaults to the current URL, but called via http://.
 =cut
 
 sub redirect_unless_via_HTTP {
-	my $msg = shift || $redirect_to_http_msg;	
-	if(cgi_is_via_SSL()) { print $msg; exit }
+    my $txt = shift || $redirect_to_http_msg;
+	if(cgi_is_via_SSL()) { print $txt; exit }
 	return 1;
 }
 sub redirect_unless_via_http { redirect_unless_via_HTTP(shift) }
