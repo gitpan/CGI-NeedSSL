@@ -3,7 +3,7 @@ package CGI::NeedSSL;
 #use strict;
 #use warnings;
 use vars qw($VERSION @EXPORT_OK @ISA);
-$VERSION = '0.06';
+$VERSION = '0.07';
 use Exporter;
 @ISA = qw(Exporter);
 @EXPORT_OK = qw(croak_unless_via_SSL cgi_is_via_SSL 
@@ -129,7 +129,7 @@ sub redirect_unless_via_HTTP {
 	if(cgi_is_via_SSL()) { print $msg; exit }
 	return 1;
 }
-sub redirect_unless_via_http { redirect_unless_via_http(shift) }
+sub redirect_unless_via_http { redirect_unless_via_HTTP(shift) }
 
 
 =item B<cgi_user_error_msg>
